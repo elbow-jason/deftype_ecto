@@ -179,6 +179,9 @@ defmodule DeftypeEctoTest do
     end
   end
 
+  alias Deftype.EctoTesting.Person7
+  # alias Deftype.EctoTesting.Pet7
+
   describe "using :belongs_to + :has_one with EctoSchema" do
     test "works" do
       cs = Person7.changeset(%Person7{}, %{})
