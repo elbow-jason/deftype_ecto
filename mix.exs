@@ -13,7 +13,7 @@ defmodule Deftype.Ecto.MixProject do
   end
 
   def elixirc_paths(:dev), do: ["lib", "examples"]
-  def elixirc_paths(_), do: ["lib", "examples"]
+  def elixirc_paths(_), do: ["lib"]
 
   # Run "mix help compile.app" to learn about applications.
   def application do
