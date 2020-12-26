@@ -113,4 +113,79 @@ defmodule DeftypeEctoTest do
       }
     end
   end
+
+  defmodule Person4 do
+    use Deftype
+
+    deftype do
+      plugin(Deftype.Defstruct)
+      plugin(Deftype.EctoChangeset, source: "person4s")
+      attr(:fname, :string, required: true)
+      attr(:lname, :string, required: true)
+      attr(:age, :integer)
+      attr(:boots, :boolean, permitted: false)
+    end
+  end
+
+  describe "using EctoChangeset as a plugin with Defstruct" do
+    test "works" do
+      cs1 = Person4.changeset(%Person4{}, %{fname: "m", lname: "h", age: 99, boots: true, other: :thing})
+      assert cs1.valid? == true
+      assert cs1.errors == []
+      assert cs1.changes == %{
+        fname: "m",
+        lname: "h",
+        age: 99
+      }
+    end
+  end
+
+  defmodule Person5 do
+    use Deftype
+
+    deftype do
+      plugin(Deftype.EctoChangeset, source: "person5s")
+      plugin(Deftype.Defstruct)
+      attr(:fname, :string, required: true)
+      attr(:lname, :string, required: true)
+      attr(:age, :integer)
+      attr(:boots, :boolean, permitted: false)
+    end
+  end
+
+  describe "using EctoChangeset as a plugin with Defstruct (in reverse order)" do
+    test "works" do
+      cs1 = Person5.changeset(%Person5{}, %{fname: "m", lname: "h", age: 99, boots: true, other: :thing})
+      assert cs1.valid? == true
+      assert cs1.errors == []
+      assert cs1.changes == %{
+        fname: "m",
+        lname: "h",
+        age: 99
+      }
+    end
+  end
+
+  alias Deftype.EctoTesting.Person6
+  # alias Deftype.EctoTesting.Pet6
+
+  describe "using :belongs_to + :has_many with EctoSchema" do
+    test "works" do
+      cs = Person6.changeset(%Person6{}, %{})
+      assert cs.valid? == false
+      assert cs.errors == [
+        {:lname, {"can't be blank", [validation: :required]}}
+      ]
+    end
+  end
+
+  describe "using :belongs_to + :has_one with EctoSchema" do
+    test "works" do
+      cs = Person7.changeset(%Person7{}, %{})
+      assert cs.valid? == false
+      assert cs.errors == [
+        {:lname, {"can't be blank", [validation: :required]}}
+      ]
+    end
+  end
 end
