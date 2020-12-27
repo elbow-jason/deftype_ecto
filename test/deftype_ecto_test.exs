@@ -119,7 +119,7 @@ defmodule DeftypeEctoTest do
 
     deftype do
       plugin(Deftype.Defstruct)
-      plugin(Deftype.EctoChangeset, source: "person4s")
+      plugin(Deftype.EctoChangeset)
       attr(:fname, :string, required: true)
       attr(:lname, :string, required: true)
       attr(:age, :integer)
@@ -144,7 +144,7 @@ defmodule DeftypeEctoTest do
     use Deftype
 
     deftype do
-      plugin(Deftype.EctoChangeset, source: "person5s")
+      plugin(Deftype.EctoChangeset)
       plugin(Deftype.Defstruct)
       attr(:fname, :string, required: true)
       attr(:lname, :string, required: true)
@@ -189,6 +189,60 @@ defmodule DeftypeEctoTest do
       assert cs.errors == [
         {:lname, {"can't be blank", [validation: :required]}}
       ]
+    end
+  end
+
+  defmodule Person8 do
+    use Deftype
+
+    deftype do
+      plugin(Deftype.Defstruct)
+      plugin(Deftype.EctoChangeset)
+      plugin(Deftype.EctoType)
+      attr(:fname, :string, required: true)
+      attr(:lname, :string, required: true)
+      attr(:age, :integer)
+      attr(:boots, :boolean, permitted: false)
+    end
+  end
+
+
+  alias Deftype.EctoTesting.Person9
+
+  describe "using EctoType plugin" do
+    test "cast/1 works" do
+      assert Person8.cast(%{}) == {:error, [fname: {"can't be blank", [validation: :required]}, lname: {"can't be blank", [validation: :required]}]}
+    end
+
+    test "works with recursive type" do
+      params = %{
+        name: "Jason",
+        id: 123,
+        knows: %{
+          name: "Mary",
+          id: 456,
+          knows: %{
+            name: "Jason",
+            id: 123
+          }
+        }
+      }
+
+      expected = %Person9{
+        name: "Jason",
+        id: 123,
+        knows: %Person9{
+          id: 456,
+          name: "Mary",
+          knows: %Person9{
+            id: 123,
+            knows: nil,
+            name: "Jason"
+          },
+        },
+      }
+
+      assert Person9.cast(params) == {:ok, expected}
     end
   end
 end

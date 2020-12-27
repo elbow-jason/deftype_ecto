@@ -4,6 +4,7 @@ defmodule Deftype.EctoSchema do
 
   @cardinalities [:belongs_to, :has_one, :has_many, :many_to_many]
 
+  @doc false
   def get_relation(metas) do
     metas
     |> Keyword.take(@cardinalities)
@@ -39,7 +40,7 @@ defmodule Deftype.EctoSchema do
   # https://hexdocs.pm/ecto/Ecto.Schema.html#many_to_many/3
   @many_to_many_opts [:join_through, :join_keys, :on_delete, :on_replace, :defaults, :join_defaults, :unique, :where, :join_where]
 
-
+  @doc false
   def cardinality_opts(:field), do: @field_opts
   def cardinality_opts(:belongs_to), do: @belongs_to_opts
   def cardinality_opts(:has_one), do: @has_one_opts
@@ -47,7 +48,8 @@ defmodule Deftype.EctoSchema do
   def cardinality_opts(:many_to_many), do: @many_to_many_opts
 
 
-  def call(cfg, _type_metas, attrs) do
+  @impl Deftype.Plugin
+  def call(cfg, _plugins, _type_metas, attrs) do
     quote do
       use Ecto.Schema
       alias Deftype.EctoSchema
@@ -82,98 +84,5 @@ defmodule Deftype.EctoSchema do
         end
       end
     end
-  end
-end
-
-defmodule Deftype.EctoChangeset do
-  alias Deftype.Attr
-  alias Ecto.Changeset
-
-  @behaviour Deftype.Plugin
-
-  def call(cfg, _type_metas, attrs) do
-    quote do
-      use Ecto.Schema
-
-      alias Deftype.EctoChangeset
-
-      cfg = unquote(cfg)
-      attrs = unquote(attrs)
-
-      @permitted Keyword.get_lazy(cfg, :permitted, fn ->
-        EctoChangeset.permitted_fields_from_attrs(attrs)
-      end)
-
-      @required Keyword.get_lazy(cfg, :required, fn ->
-        EctoChangeset.required_fields_from_attrs(attrs)
-      end)
-
-      @typemap Map.new(attrs, fn attr -> {Attr.key(attr), Attr.type(attr)} end)
-
-      if !Module.defines?(__MODULE__, {:__changeset__, 0}, :def) do
-        def __changeset__, do: @typemap
-      end
-
-      try do
-        @doc """
-        Basic permitted and required validations for the given struct.
-
-        - permitted: `#{inspect(@permitted)}`
-
-        - required: `#{inspect(@required)}`
-
-        - types: `#{inspect(@typemap, pretty: true)}`
-        """
-        def changeset(%__MODULE__{} = data \\ %__MODULE__{}, params) do
-          EctoChangeset.base_changeset({data, @typemap}, params, @permitted, @required)
-        end
-
-      rescue CompileError ->
-        @doc """
-        Basic permitted and required validations for the defined type.
-
-        - permitted: `#{inspect(@permitted)}`
-
-        - required: `#{inspect(@required)}`
-
-        - types: `#{inspect(@typemap, pretty: true)}`
-        """
-
-        def changeset(data \\ %{}, params) do
-          EctoChangeset.base_changeset({data, @typemap}, params, @permitted, @required)
-        end
-
-      end
-    end
-  end
-
-  def base_changeset(data, params, permitted, required) do
-    data
-    |> Changeset.cast(params, permitted)
-    |> Changeset.validate_required(required)
-  end
-
-  @doc false
-  def permitted_fields_from_attrs(attrs) do
-    attrs
-    |> Enum.filter(fn attr ->
-      attr
-      |> Attr.meta()
-      |> Keyword.get(:permitted, true)
-      |> Kernel.==(true)
-    end)
-    |> Enum.map(&Attr.key/1)
-  end
-
-  @doc false
-  def required_fields_from_attrs(attrs) do
-    attrs
-    |> Enum.filter(fn attr ->
-      attr
-      |> Attr.meta()
-      |> Keyword.get(:required, false)
-      |> Kernel.==(true)
-    end)
-    |> Enum.map(&Attr.key/1)
   end
 end
