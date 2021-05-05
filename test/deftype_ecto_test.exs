@@ -273,4 +273,25 @@ defmodule DeftypeEctoTest do
       assert Person9.cast(params) == {:ok, expected}
     end
   end
+
+  alias Deftype.EctoTesting.PersonPkSpecified
+  alias Deftype.EctoTesting.PersonPkFalse
+  alias Deftype.EctoTesting.PersonPkNotSpecified
+
+  describe "embedded_schema_pk" do
+    test "pk false has no id" do
+      keys = PersonPkFalse.__struct__() |> Map.keys()
+      assert :id not in keys
+    end
+
+    test "pk when specified is on the struct" do
+      keys = PersonPkSpecified.__struct__() |> Map.keys()
+      assert :id in keys
+    end
+
+    test "pk when not specifed is on the struct" do
+      keys = PersonPkNotSpecified.__struct__() |> Map.keys()
+      assert :id in keys
+    end
+  end
 end

@@ -12,8 +12,15 @@ defmodule Deftype.EctoSchema do
       cfg = unquote(cfg)
       attrs = unquote(attrs)
 
-      if pk = cfg[:primary_key] != nil do
-        @primary_key pk
+      case Keyword.fetch(cfg, :primary_key) do
+        {:ok, false} ->
+          @primary_key false
+
+        {:ok, {name, type, opts}} ->
+          @primary_key {name, type, opts}
+
+        _ ->
+          []
       end
 
       schema Keyword.fetch!(cfg, :source) do
