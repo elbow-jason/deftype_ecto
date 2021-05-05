@@ -1,6 +1,6 @@
 %{
   "decimal": {:hex, :decimal, "2.0.0", "a78296e617b0f5dd4c6caf57c714431347912ffb1d0842e998e9792b5642d697", [:mix], [], "hexpm", "34666e9c55dea81013e77d9d87370fe6cb6291d1ef32f46a1600230b1d44f577"},
-  "deftype": {:git, "https://github.com/elbow-jason/deftype.git", "4d62ce5ad492f703b8cf024c1674bbb76ff53a3d", [branch: "main"]},
-  "ecto": {:hex, :ecto, "3.5.5", "48219a991bb86daba6e38a1e64f8cea540cded58950ff38fbc8163e062281a07", [:mix], [{:decimal, "~> 1.6 or ~> 2.0", [hex: :decimal, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: true]}, {:telemetry, "~> 0.4", [hex: :telemetry, repo: "hexpm", optional: false]}], "hexpm", "98dd0e5e1de7f45beca6130d13116eae675db59adfa055fb79612406acf6f6f1"},
-  "telemetry": {:hex, :telemetry, "0.4.2", "2808c992455e08d6177322f14d3bdb6b625fbcfd233a73505870d8738a2f4599", [:rebar3], [], "hexpm", "2d1419bd9dda6a206d7b5852179511722e2b18812310d304620c7bd92a13fcef"},
+  "deftype": {:git, "https://github.com/elbow-jason/deftype.git", "25c36f1ffcc898d7675d961d84d324ac3cc72766", [branch: "main"]},
+  "ecto": {:hex, :ecto, "3.6.1", "7bb317e3fd0179ad725069fd0fe8a28ebe48fec6282e964ea502e4deccb0bd0f", [:mix], [{:decimal, "~> 1.6 or ~> 2.0", [hex: :decimal, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: true]}, {:telemetry, "~> 0.4", [hex: :telemetry, repo: "hexpm", optional: false]}], "hexpm", "cbb3294a990447b19f0725488a749f8cf806374e0d9d0dffc45d61e7aeaf6553"},
+  "telemetry": {:hex, :telemetry, "0.4.3", "a06428a514bdbc63293cd9a6263aad00ddeb66f608163bdec7c8995784080818", [:rebar3], [], "hexpm", "eb72b8365ffda5bed68a620d1da88525e326cb82a75ee61354fc24b844768041"},
 }

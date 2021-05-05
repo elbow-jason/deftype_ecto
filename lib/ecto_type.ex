@@ -17,12 +17,6 @@ defmodule Deftype.EctoType do
   @behaviour Deftype.Plugin
   def call(_cfg, _plugins, _metas, _attrs) do
     quote do
-      if !Module.defines?(__MODULE__, {:changeset, 1}) do
-        raise CompileError,
-          description:
-            "Deftype.EctoType requires the definition of changeset/1. Try adding `plugin(Deftype.EctoChangeset)` to the `deftype` block."
-      end
-
       use Ecto.Type
 
       def type, do: :map
@@ -54,6 +48,12 @@ defmodule Deftype.EctoType do
       def load(_), do: :error
 
       def dump(_), do: :error
+
+      if !Module.defines?(__MODULE__, {:changeset, 1}) do
+        raise CompileError,
+          description:
+            "Deftype.EctoType requires the definition of changeset/1. Try adding `plugin(Deftype.EctoChangeset)` to the `deftype` block."
+      end
     end
   end
 end
