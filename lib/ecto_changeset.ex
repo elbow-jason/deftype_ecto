@@ -5,9 +5,6 @@ defmodule Deftype.EctoChangeset do
   @behaviour Deftype.Plugin
 
   def call(cfg, _plugins, _type_metas, attrs) do
-    cfg = Macro.escape(cfg)
-    attrs = Macro.escape(attrs)
-
     quote do
       use Ecto.Schema
 
