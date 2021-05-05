@@ -18,13 +18,14 @@ defmodule DeftypeEctoTest do
   test "using EctoSchema as a plugin defines a schema" do
     assert function_exported?(Person, :__schema__, 1) == true
     assert function_exported?(Person, :__schema__, 2) == true
+
     assert %Person{}.__meta__ == %Ecto.Schema.Metadata{
-      context: nil,
-      prefix: nil,
-      schema: Person,
-      source: "ecto_persons",
-      state: :built
-    }
+             context: nil,
+             prefix: nil,
+             schema: Person,
+             source: "ecto_persons",
+             state: :built
+           }
   end
 
   defmodule Person2 do
@@ -53,10 +54,11 @@ defmodule DeftypeEctoTest do
     test "`required: true` in the attr's meta work for changeset/1" do
       cs = Person2.changeset(%{})
       assert cs.valid? == false
+
       assert cs.errors == [
-        fname: {"can't be blank", [{:validation, :required}]},
-        lname: {"can't be blank", [{:validation, :required}]}
-      ]
+               fname: {"can't be blank", [{:validation, :required}]},
+               lname: {"can't be blank", [{:validation, :required}]}
+             ]
     end
 
     test "`required: true` in the attr's meta work for changeset/2" do
@@ -70,11 +72,12 @@ defmodule DeftypeEctoTest do
       cs1 = Person2.changeset(%{fname: "m", lname: "h", age: 99, boots: true})
       assert cs1.valid? == true
       assert cs1.errors == []
+
       assert cs1.changes == %{
-        fname: "m",
-        lname: "h",
-        age: 99
-      }
+               fname: "m",
+               lname: "h",
+               age: 99
+             }
     end
   end
 
@@ -106,11 +109,12 @@ defmodule DeftypeEctoTest do
       cs1 = Person3.changeset(%Person3{}, %{fname: "m", lname: "h", age: 99, boots: true})
       assert cs1.valid? == true
       assert cs1.errors == []
+
       assert cs1.changes == %{
-        fname: "m",
-        lname: "h",
-        age: 99
-      }
+               fname: "m",
+               lname: "h",
+               age: 99
+             }
     end
   end
 
@@ -129,14 +133,23 @@ defmodule DeftypeEctoTest do
 
   describe "using EctoChangeset as a plugin with Defstruct" do
     test "works" do
-      cs1 = Person4.changeset(%Person4{}, %{fname: "m", lname: "h", age: 99, boots: true, other: :thing})
+      cs1 =
+        Person4.changeset(%Person4{}, %{
+          fname: "m",
+          lname: "h",
+          age: 99,
+          boots: true,
+          other: :thing
+        })
+
       assert cs1.valid? == true
       assert cs1.errors == []
+
       assert cs1.changes == %{
-        fname: "m",
-        lname: "h",
-        age: 99
-      }
+               fname: "m",
+               lname: "h",
+               age: 99
+             }
     end
   end
 
@@ -155,14 +168,23 @@ defmodule DeftypeEctoTest do
 
   describe "using EctoChangeset as a plugin with Defstruct (in reverse order)" do
     test "works" do
-      cs1 = Person5.changeset(%Person5{}, %{fname: "m", lname: "h", age: 99, boots: true, other: :thing})
+      cs1 =
+        Person5.changeset(%Person5{}, %{
+          fname: "m",
+          lname: "h",
+          age: 99,
+          boots: true,
+          other: :thing
+        })
+
       assert cs1.valid? == true
       assert cs1.errors == []
+
       assert cs1.changes == %{
-        fname: "m",
-        lname: "h",
-        age: 99
-      }
+               fname: "m",
+               lname: "h",
+               age: 99
+             }
     end
   end
 
@@ -173,9 +195,10 @@ defmodule DeftypeEctoTest do
     test "works" do
       cs = Person6.changeset(%Person6{}, %{})
       assert cs.valid? == false
+
       assert cs.errors == [
-        {:lname, {"can't be blank", [validation: :required]}}
-      ]
+               {:lname, {"can't be blank", [validation: :required]}}
+             ]
     end
   end
 
@@ -186,9 +209,10 @@ defmodule DeftypeEctoTest do
     test "works" do
       cs = Person7.changeset(%Person7{}, %{})
       assert cs.valid? == false
+
       assert cs.errors == [
-        {:lname, {"can't be blank", [validation: :required]}}
-      ]
+               {:lname, {"can't be blank", [validation: :required]}}
+             ]
     end
   end
 
@@ -206,12 +230,16 @@ defmodule DeftypeEctoTest do
     end
   end
 
-
   alias Deftype.EctoTesting.Person9
 
   describe "using EctoType plugin" do
     test "cast/1 works" do
-      assert Person8.cast(%{}) == {:error, [fname: {"can't be blank", [validation: :required]}, lname: {"can't be blank", [validation: :required]}]}
+      assert Person8.cast(%{}) ==
+               {:error,
+                [
+                  fname: {"can't be blank", [validation: :required]},
+                  lname: {"can't be blank", [validation: :required]}
+                ]}
     end
 
     test "works with recursive type" do
@@ -238,8 +266,8 @@ defmodule DeftypeEctoTest do
             id: 123,
             knows: nil,
             name: "Jason"
-          },
-        },
+          }
+        }
       }
 
       assert Person9.cast(params) == {:ok, expected}

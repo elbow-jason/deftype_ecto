@@ -1,4 +1,3 @@
-
 defmodule Deftype.EctoChangeset do
   alias Deftype.Attr
   alias Ecto.Changeset
@@ -6,6 +5,9 @@ defmodule Deftype.EctoChangeset do
   @behaviour Deftype.Plugin
 
   def call(cfg, _plugins, _type_metas, attrs) do
+    cfg = Macro.escape(cfg)
+    attrs = Macro.escape(attrs)
+
     quote do
       use Ecto.Schema
 
@@ -15,12 +17,12 @@ defmodule Deftype.EctoChangeset do
       attrs = unquote(attrs)
 
       @permitted Keyword.get_lazy(cfg, :permitted, fn ->
-        EctoChangeset.permitted_fields_from_attrs(attrs)
-      end)
+                   EctoChangeset.permitted_fields_from_attrs(attrs)
+                 end)
 
       @required Keyword.get_lazy(cfg, :required, fn ->
-        EctoChangeset.required_fields_from_attrs(attrs)
-      end)
+                  EctoChangeset.required_fields_from_attrs(attrs)
+                end)
 
       @typemap EctoChangeset.typemap_from_attrs(attrs)
 
@@ -41,22 +43,21 @@ defmodule Deftype.EctoChangeset do
         def changeset(%__MODULE__{} = data \\ %__MODULE__{}, params) do
           EctoChangeset.changeset({data, @typemap}, params, @permitted, @required)
         end
+      rescue
+        CompileError ->
+          @doc """
+          Basic permitted and required validations for the defined type.
 
-      rescue CompileError ->
-        @doc """
-        Basic permitted and required validations for the defined type.
+          - permitted: `#{inspect(@permitted)}`
 
-        - permitted: `#{inspect(@permitted)}`
+          - required: `#{inspect(@required)}`
 
-        - required: `#{inspect(@required)}`
+          - types: `#{inspect(@typemap, pretty: true)}`
+          """
 
-        - types: `#{inspect(@typemap, pretty: true)}`
-        """
-
-        def changeset(data \\ %{}, params) do
-          EctoChangeset.changeset({data, @typemap}, params, @permitted, @required)
-        end
-
+          def changeset(data \\ %{}, params) do
+            EctoChangeset.changeset({data, @typemap}, params, @permitted, @required)
+          end
       end
     end
   end

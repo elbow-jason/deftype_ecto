@@ -27,7 +27,7 @@ defmodule Deftype.Ecto.MixProject do
   defp deps do
     [
       {:ecto, "~> 3.5"},
-      {:deftype, github: "elbow-jason/deftype", branch: "main"},
+      {:deftype, github: "elbow-jason/deftype", branch: "main"}
     ]
   end
 end

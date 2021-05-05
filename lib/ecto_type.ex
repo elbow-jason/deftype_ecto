@@ -8,18 +8,19 @@ defmodule Deftype.EctoType do
     |> case do
       {:ok, _} = okay ->
         okay
+
       {:error, cs} ->
         {:error, cs.errors}
     end
   end
 
-
   @behaviour Deftype.Plugin
   def call(_cfg, _plugins, _metas, _attrs) do
     quote do
-
       if !Module.defines?(__MODULE__, {:changeset, 1}) do
-        raise CompileError, description: "Deftype.EctoType requires the definition of changeset/1. Try adding `plugin(Deftype.EctoChangeset)` to the `deftype` block."
+        raise CompileError,
+          description:
+            "Deftype.EctoType requires the definition of changeset/1. Try adding `plugin(Deftype.EctoChangeset)` to the `deftype` block."
       end
 
       use Ecto.Type

@@ -1,5 +1,4 @@
 defmodule Deftype.EctoSchema do
-
   @behaviour Deftype.Plugin
 
   @cardinalities [:belongs_to, :has_one, :has_many, :many_to_many]
@@ -13,23 +12,45 @@ defmodule Deftype.EctoSchema do
       m when map_size(m) == 0 ->
         opts = Keyword.take(metas, cardinality_opts(:field))
         {:field, opts}
+
       m when map_size(m) == 1 ->
         {cardinality, related_to} =
           m
           |> Enum.to_list()
           |> hd()
+
         opts = Keyword.take(metas, cardinality_opts(cardinality))
         {cardinality, related_to, opts}
+
       m when map_size(m) > 1 ->
         raise "More than one relationship was defined #{inspect(m)}"
     end
   end
 
   # https://hexdocs.pm/ecto/Ecto.Schema.html#field/3
-  @field_opts [:default, :source, :autogenerate, :read_after_writes, :virtual, :primary_key, :load_in_query, :redact]
+  @field_opts [
+    :default,
+    :source,
+    :autogenerate,
+    :read_after_writes,
+    :virtual,
+    :primary_key,
+    :load_in_query,
+    :redact
+  ]
 
   # https://hexdocs.pm/ecto/Ecto.Schema.html#belongs_to/3
-  @belongs_to_opts [:foreign_key, :references, :define_field, :type, :on_replace, :defaults, :primary_key, :source, :where]
+  @belongs_to_opts [
+    :foreign_key,
+    :references,
+    :define_field,
+    :type,
+    :on_replace,
+    :defaults,
+    :primary_key,
+    :source,
+    :where
+  ]
 
   # https://hexdocs.pm/ecto/Ecto.Schema.html#has_one/3
   @has_one_opts [:foreign_key, :references, :through, :on_delete, :on_replace, :defaults, :where]
@@ -38,7 +59,17 @@ defmodule Deftype.EctoSchema do
   @has_many_opts [:foreign_key, :references, :through, :on_delete, :on_replace, :defaults, :where]
 
   # https://hexdocs.pm/ecto/Ecto.Schema.html#many_to_many/3
-  @many_to_many_opts [:join_through, :join_keys, :on_delete, :on_replace, :defaults, :join_defaults, :unique, :where, :join_where]
+  @many_to_many_opts [
+    :join_through,
+    :join_keys,
+    :on_delete,
+    :on_replace,
+    :defaults,
+    :join_defaults,
+    :unique,
+    :where,
+    :join_where
+  ]
 
   @doc false
   def cardinality_opts(:field), do: @field_opts
@@ -47,9 +78,11 @@ defmodule Deftype.EctoSchema do
   def cardinality_opts(:has_many), do: @has_many_opts
   def cardinality_opts(:many_to_many), do: @many_to_many_opts
 
-
   @impl Deftype.Plugin
   def call(cfg, _plugins, _type_metas, attrs) do
+    cfg = Macro.escape(cfg)
+    attrs = Macro.escape(attrs)
+
     quote do
       use Ecto.Schema
       alias Deftype.EctoSchema
@@ -75,11 +108,17 @@ defmodule Deftype.EctoSchema do
             {{:list, related_to}, {:many_to_many, related_to, opts}} ->
               many_to_many(name, related_to, opts)
 
-            {bad_type, {card, related_to, opts}} when card in [:has_many, :many_to_many, :embeds_many] ->
+            {bad_type, {card, related_to, opts}}
+            when card in [:has_many, :many_to_many, :embeds_many] ->
               c = inspect(card)
               r = inspect(related_to)
               b = inspect(bad_type)
-              raise CompileError, description: "Deftype.EctoSchema `#{c}` relationship requires type `{:list, #{r}}` but got `#{b}`"
+
+              raise CompileError,
+                description:
+                  "Deftype.EctoSchema `#{c}` relationship requires type `{:list, #{r}}` but got `#{
+                    b
+                  }`"
           end
         end
       end
