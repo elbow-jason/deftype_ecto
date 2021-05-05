@@ -12,7 +12,10 @@ defmodule Deftype.EctoSchema do
       cfg = unquote(cfg)
       attrs = unquote(attrs)
 
-      # @primary_key cfg[:primary_key] || true
+      if pk = cfg[:primary_key] != nil do
+        @primary_key pk
+      end
+
       schema Keyword.fetch!(cfg, :source) do
         for {name, type, metas} <- attrs do
           case {type, Deftype.EctoUtil.get_relation(metas)} do
