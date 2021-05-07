@@ -1,6 +1,8 @@
 defmodule Deftype.EctoUtil do
   @moduledoc false
 
+  alias Ecto.Changeset
+
   def is_schema?(module) when is_atom(module) do
     loaded? = Code.ensure_loaded?(module)
     loaded? && function_exported?(module, :__schema__, 1)
@@ -29,6 +31,22 @@ defmodule Deftype.EctoUtil do
     function_exported?(module, fun, 1) || function_exported?(module, fun, 2)
   end
 
+  def changeset_to_result(%Changeset{} = cs) do
+    cs
+    |> Changeset.apply_action(nil)
+    |> case do
+      {:ok, _} = okay ->
+        okay
+
+      {:error, cs} ->
+        {:error, changeset_errors(cs)}
+    end
+  end
+
+  def changeset_errors(cs) do
+    Changeset.traverse_errors(cs, fn e -> e end)
+  end
+
   @cardinalities [:belongs_to, :has_one, :has_many, :many_to_many]
 
   def get_relation(metas) do
@@ -37,8 +55,7 @@ defmodule Deftype.EctoUtil do
     |> Map.new()
     |> case do
       m when map_size(m) == 0 ->
-        opts = Keyword.take(metas, cardinality_opts(:field))
-        {:field, opts}
+        {:field, metas}
 
       m when map_size(m) == 1 ->
         {cardinality, related_to} =
@@ -53,18 +70,6 @@ defmodule Deftype.EctoUtil do
         raise "More than one relationship was defined #{inspect(m)}"
     end
   end
-
-  # https://hexdocs.pm/ecto/Ecto.Schema.html#field/3
-  @field_opts [
-    :default,
-    :source,
-    :autogenerate,
-    :read_after_writes,
-    :virtual,
-    :primary_key,
-    :load_in_query,
-    :redact
-  ]
 
   # https://hexdocs.pm/ecto/Ecto.Schema.html#belongs_to/3
   @belongs_to_opts [
@@ -99,7 +104,6 @@ defmodule Deftype.EctoUtil do
   ]
 
   @doc false
-  def cardinality_opts(:field), do: @field_opts
   def cardinality_opts(:belongs_to), do: @belongs_to_opts
   def cardinality_opts(:has_one), do: @has_one_opts
   def cardinality_opts(:has_many), do: @has_many_opts
