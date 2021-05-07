@@ -1,20 +1,6 @@
 defmodule Deftype.EctoType do
-  alias Ecto.Changeset
-
-  @doc false
-  def changeset_to_result(%Changeset{} = cs) do
-    cs
-    |> Changeset.apply_action(nil)
-    |> case do
-      {:ok, _} = okay ->
-        okay
-
-      {:error, cs} ->
-        {:error, cs.errors}
-    end
-  end
-
   @behaviour Deftype.Plugin
+
   def call(_cfg, _plugins, _metas, _attrs) do
     quote do
       use Ecto.Type
@@ -24,7 +10,7 @@ defmodule Deftype.EctoType do
       def cast(data) when is_map(data) do
         data
         |> changeset()
-        |> Deftype.EctoType.changeset_to_result()
+        |> Deftype.EctoUtil.changeset_to_result()
       end
 
       def dump(%__MODULE__{} = data) when is_map(data) do
@@ -34,7 +20,7 @@ defmodule Deftype.EctoType do
       def load(data) when is_map(data) do
         data
         |> changeset()
-        |> Deftype.EctoType.changeset_to_result()
+        |> Deftype.EctoUtil.changeset_to_result()
       end
 
       @before_compile Deftype.EctoType

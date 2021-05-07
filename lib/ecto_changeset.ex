@@ -51,8 +51,11 @@ defmodule Deftype.EctoChangeset do
               {:array, _} = t ->
                 [{f, t}]
 
-              {:parameterized, Ecto.Embedded, emb} ->
+              {:parameterized, Ecto.Embedded, _type_cfg} ->
                 []
+
+              {:parameterized, _field_type, _type_cfg} = t ->
+                [{f, t}]
             end
           end)
           |> Map.new()
@@ -115,6 +118,9 @@ defmodule Deftype.EctoChangeset do
 
       {:parameterized, Ecto.Embedded, _emb} ->
         false
+
+      {:parameterized, _type_name, _type_config} ->
+        true
     end
   end
 
