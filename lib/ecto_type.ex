@@ -11,7 +11,9 @@ defmodule Deftype.EctoType do
 
   defmacro __before_compile__(_env) do
     quote do
-      def type, do: :map
+      if !Module.defines?(__MODULE__, {:type, 0}) do
+        def type, do: :map
+      end
 
       if !Module.defines?(__MODULE__, {:load, 1}) do
         def load(data) when is_map(data) do
