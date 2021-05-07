@@ -236,10 +236,10 @@ defmodule DeftypeEctoTest do
     test "cast/1 works" do
       assert Person8.cast(%{}) ==
                {:error,
-                [
-                  fname: {"can't be blank", [validation: :required]},
-                  lname: {"can't be blank", [validation: :required]}
-                ]}
+                %{
+                  fname: [{"can't be blank", [validation: :required]}],
+                  lname: [{"can't be blank", [validation: :required]}]
+                }}
     end
 
     test "works with recursive type" do
