@@ -47,7 +47,7 @@ defmodule Deftype.EctoUtil do
     Changeset.traverse_errors(cs, fn e -> e end)
   end
 
-  @cardinalities [:belongs_to, :has_one, :has_many, :many_to_many]
+  @cardinalities [:belongs_to, :has_one, :has_many, :many_to_many, :embeds_one, :embeds_many]
 
   def get_relation(metas) do
     metas
@@ -70,6 +70,18 @@ defmodule Deftype.EctoUtil do
         raise "More than one relationship was defined #{inspect(m)}"
     end
   end
+
+  # https://hexdocs.pm/ecto/Ecto.Schema.html#embeds_one/3
+  @embeds_one_opts [
+    :on_replace,
+    :source
+  ]
+
+  # https://hexdocs.pm/ecto/Ecto.Schema.html#embeds_many/3
+  @embeds_many_opts [
+    :on_replace,
+    :source
+  ]
 
   # https://hexdocs.pm/ecto/Ecto.Schema.html#belongs_to/3
   @belongs_to_opts [
@@ -108,4 +120,6 @@ defmodule Deftype.EctoUtil do
   def cardinality_opts(:has_one), do: @has_one_opts
   def cardinality_opts(:has_many), do: @has_many_opts
   def cardinality_opts(:many_to_many), do: @many_to_many_opts
+  def cardinality_opts(:embeds_one), do: @embeds_one_opts
+  def cardinality_opts(:embeds_many), do: @embeds_many_opts
 end
