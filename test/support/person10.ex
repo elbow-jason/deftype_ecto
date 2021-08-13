@@ -10,7 +10,7 @@ defmodule Deftype.EctoTesting.Person10 do
     plugin(Deftype.EctoEmbeddedSchema)
     plugin(Deftype.EctoChangeset)
     attr(:pets, {:list, Pet6})
-    attr(:person9s, {:list, Person9}, required: true)
+    attr(:person9s, {:list, Person9})
     attr(:lname, :string, required: true)
     attr(:age, :integer)
     attr(:boots, :boolean, permitted: false)

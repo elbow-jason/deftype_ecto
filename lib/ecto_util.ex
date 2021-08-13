@@ -121,5 +121,5 @@ defmodule Deftype.EctoUtil do
   def cardinality_opts(:has_many), do: @has_many_opts
   def cardinality_opts(:many_to_many), do: @many_to_many_opts
   def cardinality_opts(:embeds_one), do: @embeds_one_opts
-  def cardinality_opts(:embeds_many), do: @embeds_many_opts
+  def cardinality_opts(:embeds_mansy), do: @embeds_many_opts
 end

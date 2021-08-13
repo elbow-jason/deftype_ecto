@@ -85,22 +85,24 @@ defmodule Deftype.EctoChangeset do
         def __changeset__, do: typemap()
       end
 
-      try do
-        @doc """
-        Basic permitted and required validations for the given struct.
-        """
-        def changeset(%__MODULE__{} = data \\ %__MODULE__{}, params) do
-          EctoChangeset.changeset({data, typemap()}, params, permitted(), required())
-        end
-      rescue
-        CompileError ->
+      if !Module.defines?(__MODULE__, {:changeset, 2}, :def) do
+        try do
           @doc """
-          Basic permitted and required validations for the defined type.
+          Basic permitted and required validations for the given struct.
           """
-
-          def changeset(data \\ %{}, params) do
+          def changeset(%__MODULE__{} = data \\ %__MODULE__{}, params) do
             EctoChangeset.changeset({data, typemap()}, params, permitted(), required())
           end
+        rescue
+          CompileError ->
+            @doc """
+            Basic permitted and required validations for the defined type.
+            """
+
+            def changeset(data \\ %{}, params) do
+              EctoChangeset.changeset({data, typemap()}, params, permitted(), required())
+            end
+        end
       end
     end
   end
